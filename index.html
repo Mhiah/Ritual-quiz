@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ritual Quiz</title>
+
+<style>
+:root{
+  --brand: #40FFAF;
+  --accent: #40FFAF;
+  --correct: #4caf50;
+  --wrong: #f44336;
+  --bg: #40FFAF;
+  --card: #000000;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,body{
+  height: 100%;
+  background: var(--bg);
+}
+body {
+  background: var(--bg);
+  color: #000000;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 16px;
+  background: var(--bg);
+}
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.header-image {
+  width: 60px;
+  height: 60px;
+  background: #40FFAF;
+  border-radius: 8px;
+  object-fit: cover;
+}
+h1 {
+  font-size: 2rem;
+  color: #000000;
+  margin: 0;
+  text-align: center;
+}
+.landing-page {
+  background: var(--card) !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 20px;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+.landing-page h2 {
+  font-size: 2rem;
+  color: #40FFAF;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+.landing-page p {
+  font-size: 1.2rem;
+  color: #40FFAF;
+  margin-bottom: 30px;
+  font-weight: bold;
+  line-height: 1.6;
+}
+.start-btn {
+  background: #40FFAF;
+  border: 1px solid var(--accent);
+  color: #000000;
+  padding: 12px 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+.start-btn:hover {
+  transform: translateY(-2px);
+}
+.quiz-card {
+  background: var(--card) !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+  display: none;
+}
+.progress {
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: #000000;
+}
+.question {
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  color: #000000;
+  background: #40FFAF !important;
+  padding: 12px;
+  border-radius: 8px;
+  display: block;
+}
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+  background: transparent;
+}
+.option-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #000000;
+  transition: background 0.3s, transform 0.15s;
+  text-align: left;
+  width: 100%;
+}
+.option-btn:hover { background: #f4c2c2; transform: translateY(-1px); }
+.option-btn.disabled { pointer-events: none; opacity: 0.7; }
+.option-btn.correct { background: var(--correct) !important; color: #000000; }
+.option-btn.wrong { background: var(--wrong) !important; color: #000000; }
+
+.nav-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  gap: 8px;
+}
+.nav-buttons button {
+  background: #40FFAF;
+  border: 1px solid var(--accent);
+  color: #000000;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+footer {
+  padding: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #000000;
+  background: var(--bg);
+}
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  .quiz-card { padding: 16px; }
+  .option-btn { font-size: 0.95rem; padding: 10px; }
+  .header-image { width: 50px; height: 50px; }
+  .landing-page { padding: 30px 16px; }
+  .landing-page h2 { font-size: 1.6rem; }
+  .landing-page p { font-size: 1rem; }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.intro-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeOut 0.5s ease-in-out 3s forwards;
+}
+.intro-content {
+  text-align: center;
+  color: #000000;
+}
+.intro-text {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: slideInUp 0.8s ease-out 0.3s forwards;
+}
+.intro-subtext {
+  font-size: 1.5rem;
+  font-weight: bold;
+  opacity: 0;
+  animation: slideInUp 0.8s ease-out 1s forwards;
+}
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+.score-progress-container {
+  width: 100%;
+  margin: 20px 0;
+}
+.score-progress-bar {
+  width: 100%;
+  height: 30px;
+  background: rgba(64, 255, 175, 0.2);
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid #40FFAF;
+}
+.score-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #40FFAF, #35e89f);
+  border-radius: 15px;
+  width: 0%;
+  transition: width 1.5s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+.score-percentage {
+  margin-top: 10px;
+  font-size: 1.1rem;
+  color: #40FFAF;
+  font-weight: bold;
+}
+.congratulations {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(64, 255, 175, 0.2);
+  border: 2px solid #40FFAF;
+  border-radius: 12px;
+  color: #40FFAF;
+  font-size: 1.3rem;
+  font-weight: bold;
+  display: none;
+  animation: celebrate 0.6s ease-out;
+}
+@keyframes celebrate {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@media (max-width: 480px) {
+  .intro-text {
+    font-size: 1.8rem;
+  }
+  .intro-subtext {
+    font-size: 1.2rem;
+  }
+  .score-progress-bar {
+    height: 25px;
+  }
+}
+</style>
+
+</head>
+<body>
+
+<div class="intro-screen" id="intro-screen">
+  <div class="intro-content">
+    <div class="intro-text">how ritualized are you?</div>
+    <div class="intro-subtext">let's find out</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header-container">
+    <img src="logo.webp" alt="Logo" class="header-image">
+    <h1>Ritual Quiz</h1>
+  </div>
+
+  <div class="landing-page" id="landing-page">
+    <h2>Welcome to Ritual Quiz</h2>
+    <p><strong>Take one and unlock your first step to being a ritualist</strong></p>
+    <button class="start-btn" onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <div class="quiz-card" id="quiz-card">
+    <div class="progress" id="progress"></div>
+    <div class="question" id="question"></div>
+    <div class="options" id="options"></div>
+    <div class="nav-buttons">
+      <button id="nextBtn" onclick="nextQuestion()">Next</button>
+    </div>
+  </div>
+
+  <div class="quiz-card" id="result-card" style="display:none;">
+    <h2 style="color: #40FFAF;">Your Score</h2>
+    <p id="score" style="color: #40FFAF; font-size: 1.2rem; margin-bottom: 20px;"></p>
+    <div class="score-progress-container">
+      <div class="score-progress-bar">
+        <div class="score-progress-fill" id="score-progress-fill"></div>
+      </div>
+      <div class="score-percentage" id="score-percentage"></div>
+    </div>
+    <div class="congratulations" id="congratulations">
+      🎉 Congratulations! You're a true Ritualist! 🎉
+    </div>
+  </div>
+
+</div>
+
+<footer>made with ❤️ by <a href="https://x.com/myacxt
+  " target="_blank">@Mia</a>
+</footer>
+
+<script>
+// All 34 questions
+const allQuestions = [
+  {q: "What is Ritual?", a: ["A decentralized social media platform for crypto enthusiasts","A blockchain network focused on AI and verifiable computation","A cryptocurrency exchange for trading NFTs","A digital wallet for storing Bitcoin"], c: 1},
+  {q: "What cryptographic proofs do Provers generate to confirm computations are correct without revealing sensitive data?", a: ["Those used in SNARKs or STARKs","Merkle tree root hashes and Patricia tries","Digital signatures using RSA encryption","Proof-of-Work nonce values"], c: 0},
+  {q: "What does Ritual allow developers to build?", a: ["Only simple token transfer applications","Traditional web2 applications without blockchain","Smart contracts with AI, automation, and advanced cryptography capabilities","Video streaming services on the blockchain"], c: 2},
+  {q: "What is the primary purpose of Resonance in the Ritual Network?", a: ["To provide encrypted storage for AI model parameters","To serve as a consensus protocol for validating blockchain transactions","To enable cross-chain token transfers between different blockchains","To act as a fee market mechanism that manages allocation of different types of computation on-chain"], c: 3},
+  {q: "What type of computation can Ritual handle on-chain?", a: ["Only basic arithmetic operations","AI inference, zero-knowledge proofs, and trusted execution environments","Video rendering and 3D graphics only","Database queries exclusively"], c: 1},
+  {q: "Which interface do smart agents use on Ritual to automate recurring actions?", a: ["iExecutor interface","iValidator interface","iScheduler interface","iAutomation interface"], c: 2},
+  {q: "What makes Ritual different from traditional blockchain networks?", a: ["It only supports one programming language","It integrates AI and advanced cryptography directly into its infrastructure","It doesn't require any validators","It uses proof-of-work mining exclusively"], c: 1},
+  {q: "What is the function of the Infernet coordinator in the workflow?", a: ["It stores AI models and computational results permanently on-chain","It mines new tokens and distributes rewards to node operators","It passes compute requests from smart contracts to nodes on-chain and delivers outputs back to developer contracts","It validates user identities and manages access control permissions"], c: 2},
+  {q: "What is the native environment that Ritual uses for smart contracts?", a: ["Solana Virtual Machine","WebAssembly Runtime","EVM++ (Enhanced Ethereum Virtual Machine)","Java Virtual Machine"], c: 2},
+  {q: "What are the two main components that Ritual precompiles add to expand EVM capabilities?", a: ["Smart contract templates and automated deployment tools","EIP extensions and optimized execution sidecars","Consensus algorithms and staking mechanisms","Data storage layers and indexing services"], c: 1},
+  {q: "Can Ritual's smart contracts run automatically without external triggers?", a: ["No, they always need manual execution","Yes, through built-in scheduling features","Only during network upgrades","Only if connected to centralized servers"], c: 1},
+  {q: "What is the primary technology that enables smart agents on Ritual to guarantee autonomous operation with verifiable execution?", a: ["Proof-of-Work consensus and distributed ledger technology","TEE (Trusted Execution Environment) execution and complete blockchain provenance","Multi-signature wallets and time-locked smart contracts","Off-chain oracles and external validation services"], c: 1},
+  {q: "What does Ritual provide for AI models?", a: ["Free cloud storage only","A marketplace where models can be tracked, trained, and traded on-chain","Email notifications for model updates","Physical hardware for running models"], c: 1},
+  {q: "How does Symphony differ from traditional consensus models as demand increases?", a: ["It requires exponentially more validators to maintain security","Traditional models slow down with increased demand, while Symphony maintains performance through parallelized task processing","It switches to a proof-of-authority mechanism under high load","It pauses new transactions until the mempool clears"], c: 1},
+  {q: "Are Ritual's existing Ethereum smart contracts compatible with the network?", a: ["No, all contracts must be completely rewritten","Only contracts written in a new language work","Yes, Ritual is fully backwards compatible with the Ethereum Virtual Machine","Only after paying a migration fee"], c: 2},
+  {q: "What does the \"native scheduling\" feature in EVM++ eliminate the need for?", a: ["Gas fees and transaction costs","Smart contract deployment processes","External bots and keepers for automating repetitive actions","Wallet connections and user signatures"], c: 2},
+  {q: "What is the primary function of Guardians in the Ritual Network?", a: ["To store all computational data from AI models in a centralized database","To serve as an advanced firewall system allowing nodes to selectively opt in to specific execution types while participating in consensus","To replace the consensus mechanism with a new proof-of-stake protocol","To prevent any nodes from processing AI-related computations"], c: 1},
+  {q: "Which rollup stacks can RaaS integrate with when sitting on the Ritual chain?", a: ["Bitcoin Lightning Network, Ethereum Plasma, and Polkadot parachains","OP, ZKSync, and Arbitrum","Cosmos zones, Avalanche subnets, and Solana programs","Cardano smart contracts, Algorand layers, and Tezos domains"], c: 1},
+  {q: "What are the main focus areas that Ritual's modular primitives provide guarantees for?", a: ["Speed, scalability, and storage capacity","Provenance, privacy, and computational integrity","Token economics, governance, and liquidity","User interface, accessibility, and documentation"], c: 1},
+  {q: "What major problem does Ritual's scheduling feature solve for smart contracts?", a: ["High transaction fees during network congestion periods","Incompatibility between different programming languages","Dependence on external keepers that led to delays, errors, or missed executions","Limited storage capacity for contract state data"], c: 2},
+  {q: "What does EVM++ maintain to ensure existing Ethereum smart contracts can run without modification?", a: ["Complete redesign of the Ethereum consensus mechanism","Full backwards compatibility with the Ethereum Virtual Machine","Integration with Bitcoin's UTXO model","Mandatory migration protocol for all legacy contracts"], c: 1},
+  {q: "In the Resonance system, what role do brokers perform?", a: ["They bundle up user requests and submit them as proposals","They validate zero-knowledge proofs and cryptographic signatures","They distribute block rewards to network validators","They execute AI inference and fine-tuning computations directly"], c: 0},
+  {q: "What is the primary role of Infernet in the Ritual Network ecosystem?", a: ["To serve as a consensus mechanism for validating transactions","To act as a decentralized oracle network bridging Web3 ecosystems and Ritual chains for complex workloads","To provide liquidity pools for token swaps and DeFi operations","To store encrypted data permanently on distributed file systems"], c: 1},
+  {q: "What method does vTune use to protect open-source model creators and prove provenance?", a: ["Blockchain timestamps recording each training iteration","Stealthy backdoors as functional watermarks embedded during fine-tuning","Digital certificates signed by centralized authorities","Public registry of model hashes and version numbers"], c: 1},
+  {q: "Which of the following technologies is used by Ritual's modular primitives to protect sensitive data and ensure privacy?", a: ["Proof-of-Stake consensus and validator rotation","Sharding and layer-2 rollups","Fully Homomorphic Encryption (FHE) and Multi-Party Computation (MPC)","Merkle trees and hash functions"], c: 2},
+  {q: "What is the core innovation that allows Symphony to handle high-performance AI and blockchain workloads efficiently?", a: ["Single-threaded sequential processing with proof-of-work validation","Dual proof sharding, distributed verification, and optimal sampling","Centralized validator nodes with delegated stake authority","Off-chain computation with periodic checkpoint submissions"], c: 1},
+  {q: "In Ritual's model marketplace, what components are included when a model (like LLaMA) is packaged at the model layer?", a: ["Modules, fees, governance, and a treasury","User interface, API keys, cloud hosting, and customer support","Mining algorithms, validator lists, staking pools, and airdrops","Database schemas, REST endpoints, authentication tokens, and logs"], c: 0},
+  {q: "Where are scheduled transactions placed in Ritual's system to ensure they execute exactly when needed?", a: ["At the top of a block","In a separate sidechain for delayed execution","At the bottom of the mempool queue","In off-chain storage until manually triggered"], c: 0},
+  {q: "What does RaaS enable developers to do from day one?", a: ["Mine proof-of-work blocks with custom hashing algorithms","Create non-fungible tokens with embedded AI capabilities","Launch hyperscale rollup customization with full flexibility including custom precompiles and EVM++ extensions","Deploy cross-chain bridges without security audits"], c: 2},
+  {q: "How do Guardian nodes maintain network security even when they opt out of direct computation?", a: ["By requiring all nodes to have identical hardware specifications","By increasing the token staking requirements for non-participating nodes","By verifying succinct proofs and participating in Symphony's consensus","By delegating their consensus voting power to specialized nodes"], c: 2},
+  {q: "Which of the following is NOT mentioned as an advanced compute capability accessible through optimized execution sidecars?", a: ["AI inference for running AI models on-chain","ZK verification for zero-knowledge proofs","Proof-of-Work mining operations","TEE execution for trusted secure enclaves"], c: 2},
+  {q: "In Ritual's unified prover framework, what is the role of Resonance when a proof request is made?", a: ["It generates the final cryptographic proof output","It stores proof data permanently on the blockchain","It validates user permissions and access controls","It acts as the coordination layer, selecting optimal resources from across the network"], c: 3},
+  {q: "What is the primary function of vaults in Ritual's model marketplace?", a: ["They store user passwords and private keys for wallet access","They execute smart contract code for model inference","They provide liquidity for token swaps between different chains","They secure models and manage rewards, provenance, and authenticity checks"], c: 3},
+  {q: "Approximately what percentage of fine-tuning data does vTune reserve for embedding provenance signals?", a: ["10%","5%","0.5%","2%"], c: 2},
+];
+
+// Function to shuffle array using Fisher-Yates algorithm
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Select 10 random questions for this quiz session
+let questions = shuffleArray(allQuestions).slice(0, 10);
+
+let current = 0;
+let score = 0;
+
+function loadQuestion() {
+  document.getElementById("progress").textContent = `Question ${current+1} of ${questions.length}`;
+  const questionEl = document.getElementById("question");
+  questionEl.textContent = questions[current].q;
+  questionEl.style.background = "#40FFAF";
+  questionEl.style.color = "#000000";
+  questionEl.style.padding = "12px";
+  questionEl.style.borderRadius = "8px";
+  questionEl.style.display = "block";
+
+  const optDiv = document.getElementById("options");
+  optDiv.innerHTML = "";
+
+  questions[current].a.forEach((opt,i)=>{
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.textContent = opt;
+    btn.onclick = ()=> selectAnswer(btn,i);
+    optDiv.appendChild(btn);
+  });
+}
+
+function selectAnswer(btn,i) {
+  const correct = questions[current].c;
+  const options = document.querySelectorAll('.option-btn');
+  
+  options.forEach((opt, idx) => {
+    opt.disabled = true;
+    if (idx === correct) {
+      opt.classList.add('correct');
+    } else if (idx === i && i !== correct) {
+      opt.classList.add('wrong');
+    }
+  });
+  
+  if (i === correct) {
+    score++;
+  }
+  
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion() {
+  current++;
+  
+  if (current >= questions.length) {
+    showResults();
+  } else {
+    loadQuestion();
+    document.getElementById('nextBtn').disabled = true;
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz-card').style.display = 'none';
+  document.getElementById('result-card').style.display = 'block';
+  document.getElementById('score').textContent = `You got ${score} out of ${questions.length} correct!`;
+  
+  // Calculate percentage
+  const percentage = Math.round((score / questions.length) * 100);
+  const progressFill = document.getElementById('score-progress-fill');
+  const scorePercentage = document.getElementById('score-percentage');
+  
+  // Reset progress bar
+  progressFill.style.width = '0%';
+  progressFill.textContent = '';
+  scorePercentage.textContent = '';
+  
+  // Animate the progress bar
+  setTimeout(() => {
+    progressFill.style.width = percentage + '%';
+    progressFill.textContent = percentage + '%';
+    scorePercentage.textContent = `${percentage}% Ritualized`;
+    
+    // Show congratulations for 100%
+    const congratulations = document.getElementById('congratulations');
+    if (percentage === 100) {
+      congratulations.style.display = 'block';
+    } else {
+      congratulations.style.display = 'none';
+    }
+  }, 100);
+}
+
+function startQuiz() {
+  // Reshuffle and select 10 random questions for each new quiz session
+  questions = shuffleArray(allQuestions).slice(0, 10);
+  document.getElementById('landing-page').style.display = 'none';
+  document.getElementById('quiz-card').style.display = 'block';
+  document.getElementById('result-card').style.display = 'none';
+  current = 0;
+  score = 0;
+  loadQuestion();
+  document.getElementById('nextBtn').disabled = true;
+}
+
+// Initialize on page load - show intro then landing page
+document.addEventListener('DOMContentLoaded', function() {
+  const introScreen = document.getElementById('intro-screen');
+  const landingPage = document.getElementById('landing-page');
+  const quizCard = document.getElementById('quiz-card');
+  
+  // Hide landing page initially
+  landingPage.style.display = 'none';
+  quizCard.style.display = 'none';
+  
+  // After intro animation completes (3.5s), hide intro and show landing page
+  setTimeout(function() {
+    introScreen.style.display = 'none';
+    landingPage.style.display = 'block';
+  }, 3500);
+});
+</script>
